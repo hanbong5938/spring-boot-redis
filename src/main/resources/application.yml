@@ -1,0 +1,11 @@
+# local
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: "jdbc:mysql://localhost:3306/checkerdb?characterEncoding=UTF-8"
+    username: root
+    password: 1223
+---
