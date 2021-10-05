@@ -1,4 +1,7 @@
 package com.springBootApi.api.infra.sms;
 
-public class DomesticSms {
+import org.springframework.stereotype.Component;
+
+@Component
+public class DomesticSms implements SmsClient {
 }

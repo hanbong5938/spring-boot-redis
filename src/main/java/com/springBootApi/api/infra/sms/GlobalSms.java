@@ -1,4 +1,7 @@
 package com.springBootApi.api.infra.sms;
 
-public class GlobalSms {
+import org.springframework.stereotype.Component;
+
+@Component
+public class GlobalSms implements SmsClient{
 }

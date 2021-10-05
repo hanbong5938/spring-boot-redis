@@ -1,5 +1,9 @@
 package com.springBootApi.api.global.error;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.springBootApi.api.global.error.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -7,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import javax.validation.ConstraintViolation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,14 +19,30 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ErrorResponse {
+
+    /**
+     * 메세지
+     * */
     private String message;
+
+    /**
+     * 404 상태코드
+     * */
     private int status;
+
+    /**
+     * 에러 리스트
+     * */
     private List<FieldError> errors;
+
+    /**
+     * ENUM 생성한 코드
+     * */
     private String code;
 
 
     private ErrorResponse(final ErrorCode code, final List<FieldError> errors) {
-        this.message = code.getMessage();
+        this.message = errors.stream().findFirst().orElseThrow().getReason();
         this.status = code.getStatus();
         this.errors = errors;
         this.code = code.getCode();
@@ -51,6 +72,18 @@ public class ErrorResponse {
         final String value = e.getValue() == null ? "" : e.getValue().toString();
         final List<ErrorResponse.FieldError> errors = ErrorResponse.FieldError.of(e.getName(), value, e.getErrorCode());
         return new ErrorResponse(ErrorCode.INVALID_TYPE_VALUE, errors);
+    }
+
+    /**
+     * json 형식 만들기 위해
+     * @return {"status":"INTERNAL_SERVER_ERROR","timestamp":"24-08-2021 10:03:31","message":"Unexpected error"}
+     * */
+    public String convertToJson() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        return mapper.writeValueAsString(this);
     }
 
 

@@ -1,3 +1,48 @@
+server:
+  port: 8081
+  shutdown: graceful
+spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          # spring <-> jdbc <-> DB 타임존
+          time_zone: UTC
+        direct: org.hibernate.dialect.MySQL5InnoDBDialect
+        default_schema: api
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 로그 색상 설정
+  output:
+    ansi:
+      enabled: always
+  # json 변환시 없는 값 에러 발생 여부
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  # 파일 사이즈
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  # 인코딩
+  messages:
+    encoding: UTF-8
+  # 토큰 생성용 시크릿키
+  jwt:
+    secret: H0fJ<%Sh2yuxP234k#J*29eOFJermkdfga0erko34jOW#IJ@*(UFDO2j3uifhyd92)(E*we2N@#*Ijw
+  freemarker:
+    check-template-location: false
+  # 시작시 배치 작동 off
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      schema: api
+  flyway:
+    baseline-on-migrate: true
 # local
 ---
 spring:
@@ -5,7 +50,16 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: "jdbc:mysql://localhost:3306/checkerdb?characterEncoding=UTF-8"
+    url: "jdbc:mysql://localhost:3306/api?characterEncoding=UTF-8"
     username: root
     password: 1223
----
+  jpa:
+    # db 자동생성
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    # 쿼리 정렬
+    properties:
+      hibernate:
+        format_sql: true
